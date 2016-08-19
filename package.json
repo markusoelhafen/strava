@@ -1,0 +1,24 @@
+{
+  "name": "strava",
+  "version": "1.0.0",
+  "description": "",
+  "main": "oAuth.js",
+  "dependencies": {
+    "strava-v3": "^1.12.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "oAuth": "node ./oAuth.js",
+    "quickstart": "node ./quickstart.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markusoelhafen/strava.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/markusoelhafen/strava/issues"
+  },
+  "homepage": "https://github.com/markusoelhafen/strava#readme"
+}
