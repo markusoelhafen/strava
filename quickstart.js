@@ -1,7 +1,10 @@
 var strava = require('strava-v3');
 var activities = [];
 var userId = 7511175;
-var activityCount;
+var activityCount = 0;
+var today = new Date();
+today = today.getTime();
+var milliDifference = 1209600000;
 
 
 function getActivityCount(id, callback) {
@@ -12,7 +15,7 @@ function getActivityCount(id, callback) {
       return;
     }
     // combine all different activity-counts into one sum
-    activityCount = output.all_ride_totals.count + output.all_run_totals.count + output.all_swim_totals.count;
+    activityCount += output.all_ride_totals.count + output.all_run_totals.count + output.all_swim_totals.count;
 
     callback(activityCount);
   });
@@ -39,25 +42,48 @@ function getActivityData(count, callback) {
 }
 
 // functions pushes the input data in a specified array
-function pushData(array, data, callback) {
-  console.log("pushing " + data.length + " data bundles..");
-  for(var i = 0; i < data.length; i++){
-    array.push(data[i]);
+function pushData(input) {
+  console.log("pushing data bundles..");
+  for(var i = 0; i < input.length; i++){
+    activities.push(input[i]);
   }
 }
 
 // function logs all objects of an array
 function listData(array) {
   console.log("listing all " + activityCount + " activities..");
-  console.log(array);
+  array.sort(function(a, b) {
+    return (b.id - a.id);
+  });
+  array.forEach(function(entry){
+    var d = new Date(entry.start_date);
+    if(today - d.getTime() > milliDifference) {
+      console.log(entry.start_date);
+
+    }
+  });
+
+}
+
+
+function sortArray(array, sort, order) {
+  array.sort(function(a, b) {
+    if(order == "asc"){
+      return (a.sort - b.sort);
+    }
+    else {
+      return (b.sort - a.sort);
+    }
+  });
+  console.log(array.sort);
 }
 
 // running all functions and passing the output to the next function
-getActivityCount(userId, function(count){
-  getActivityData(count, function(data){
-    pushData(activities, data);
+getActivityCount(userId, function(activityCount){
+  getActivityData(activityCount, function(data){
+    pushData(data);
     if(activities.length >= activityCount) {
-      listData(activities.length);
+      listData(activities);
     }
   });
 });
