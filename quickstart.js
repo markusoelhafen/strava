@@ -1,10 +1,10 @@
-var strava = require('strava-v3')
-  , activities = []
-  , userId = 7511175;
+var strava = require('strava-v3');
+var activities = [];
+var userId = 7511175;
+var activityCount;
 
 
 function getActivityCount(id, callback) {
-  var count;
   // get the overall stats for an authenticated athlete
   strava.athletes.stats({id: id}, function(err, output) {
     if(err) {
@@ -12,9 +12,9 @@ function getActivityCount(id, callback) {
       return;
     }
     // combine all different activity-counts into one sum
-    count = output.all_ride_totals.count + output.all_run_totals.count + output.all_swim_totals.count;
+    activityCount = output.all_ride_totals.count + output.all_run_totals.count + output.all_swim_totals.count;
 
-    callback(count);
+    callback(activityCount);
   });
 }
 
@@ -22,11 +22,12 @@ function getActivityData(count, callback) {
   console.log("acitivity count: " + count);
 
   var pagination = Math.ceil(count/200);
+  pages = pagination;
 
   for(pagination; pagination > 0; pagination--){
     console.log(pagination + " getting Data..");
     // get the information from strava for an authenticated athelete, max. 200 entries each page
-    strava.athlete.listActivities({id: 7511175, page: pagination, per_page: 1}, function(err, output) {
+    strava.athlete.listActivities({id: userId, page: pagination, per_page: 200}, function(err, output) {
       if(err) {
         console.log(err);
         return;
@@ -37,23 +38,25 @@ function getActivityData(count, callback) {
 }
 
 // functions pushes the input data in a specified array
-function pushData(array, data) {
+function pushData(array, data, callback) {
   console.log("pushing data..");
-  console.log(data[0].id);
-  array.push(data);
+  for(var i = 0; i < data.length; i++){
+    array.push(data[i]);
+  }
 }
 
 // function logs all objects of an array
-function listData(array, callback) {
-  console.log("listing activities..");
+function listData(array) {
+  console.log("listing all " + activityCount + " activities..");
+  console.log(array);
 }
 
-function run() {
-  getActivityCount(userId, function(count){
-    getActivityData(count, function(data){
-      pushData(activities, data);
-      console.log(activities.length);
-    });
+// running all functions and passing the output to the next function
+getActivityCount(userId, function(count){
+  getActivityData(count, function(data){
+    pushData(activities, data);
+    if(activities.length >= activityCount) {
+      listData(activities);
+    }
   });
-  callback();
-}
+});
