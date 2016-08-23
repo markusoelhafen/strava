@@ -22,24 +22,25 @@ function getActivityData(count, callback) {
   console.log("acitivity count: " + count);
 
   var pagination = Math.ceil(count/200);
-  pages = pagination;
 
   for(pagination; pagination > 0; pagination--){
-    console.log(pagination + " getting Data..");
     // get the information from strava for an authenticated athelete, max. 200 entries each page
     strava.athlete.listActivities({id: userId, page: pagination, per_page: 200}, function(err, output) {
+      console.log("getting Data..");
       if(err) {
         console.log(err);
         return;
       }
-      callback(output);
+      else if(output) {
+        callback(output);
+      }
     });
   }
 }
 
 // functions pushes the input data in a specified array
 function pushData(array, data, callback) {
-  console.log("pushing data..");
+  console.log("pushing " + data.length + " data bundles..");
   for(var i = 0; i < data.length; i++){
     array.push(data[i]);
   }
@@ -56,7 +57,7 @@ getActivityCount(userId, function(count){
   getActivityData(count, function(data){
     pushData(activities, data);
     if(activities.length >= activityCount) {
-      listData(activities);
+      listData(activities.length);
     }
   });
 });
