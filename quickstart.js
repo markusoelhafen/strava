@@ -58,12 +58,11 @@ function listData(array) {
   array.forEach(function(entry){
     var d = new Date(entry.start_date);
     if(today - d.getTime() > milliDifference) {
-      console.log(entry.start_date);
-
+      updatePrivacy(entry);
     }
   });
-
 }
+
 
 
 function sortArray(array, sort, order) {
@@ -76,6 +75,16 @@ function sortArray(array, sort, order) {
     }
   });
   console.log(array.sort);
+}
+
+function updatePrivacy(entry) {
+  strava.activities.update({id: entry.id, private: true}, function(err, output){
+    if(err){
+      console.log(err);
+      return;
+    }
+    console.log("success");
+  });
 }
 
 // running all functions and passing the output to the next function
